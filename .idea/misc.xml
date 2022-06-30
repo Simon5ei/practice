@@ -6,6 +6,7 @@
         <option value="$PROJECT_DIR$/testmybatis/pom.xml" />
         <option value="$PROJECT_DIR$/testHTTPClient/pom.xml" />
         <option value="$PROJECT_DIR$/testServer/pom.xml" />
+        <option value="$PROJECT_DIR$/RSA/pom.xml" />
       </list>
     </option>
   </component>

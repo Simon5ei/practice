@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+<form id="doRegister">
+    <!--页面放置一个隐藏的input标签，用于存放公钥-->
+    <input type="hidden" th:value="${session.publicKey}" name="publicKey" id="publicKey">
+    <div>
+        <label>真实姓名</label>
+        <input type="text" name="name" >
+    </div>
+    <div>
+        <label>用户名</label>
+        <input type="text" name="username" >
+    </div>
+    <div>
+        <label>密码</label>
+        <input type="password" name="password" >
+    </div>
+    <button type="button" id="register">注册</button>
+</form>
+</body>
+<!--jquery-->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!--JSEncrypt-->
+<script src="https://cdn.bootcss.com/jsencrypt/3.0.0-beta.1/jsencrypt.js"></script>
+<!--SweetAlert-->
+<link href="https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/0.0.1/sweetalert2.css" rel="stylesheet">
+<script src="https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/0.0.1/sweetalert2.min.js"></script>
+<script type="text/javascript">
+    $("#register").click(function () {
+        let data = $("#doRegister").serializeArray();
+        console.log(data);
+        let publicKey = data[0].value;
+        let rel_name = data[1].value;
+        let username = data[2].value;
+        let old_Pwd = data[3].value;
+        let password = encrypt(publicKey, old_Pwd);
+        let rea_data = {"rel_name": rel_name, "username": username, "password": password};
+        $.ajax({
+            url: '/doAdd',
+            type: 'post',
+            dataType: 'json',
+            encoding: 'UTF-8',
+            data: rea_data,
+            success: function (res) {
+                // 一旦设置的 dataType 选项，就不再关心 服务端 响应的 Content-Type 了
+                // 客户端会主观认为服务端返回的就是 JSON 格式的字符串
+                console.log(res);
+                if (res.code == 200) {
+                    swal({
+                        title: "注册成功！",
+                        text: "",
+                        type: "success",
+                        confirmButtonText: "立即登录",
+                        closeOnConfirm: false,
+                    }, function () {
+                        window.location = "/";
+                    })
+                }
+                if (res.code == 101) {
+                    swal({
+                        title: "注册失败。",
+                        text: "该用户名已被注册，请重新输入。",
+                        type: "error",
+                        confirmButtonText: "确认",
+                    });
+                }
+                return false;
+            },
+            error: function () {
+                alert("服务器忙碌...");
+            }
+        });
+
+
+    });
+
+    // RSA前端加密
+    function encrypt(key, oldPwd) {
+        let encrypt = new JSEncrypt();
+        encrypt.setPublicKey(key);
+        let encrypted = encrypt.encrypt(oldPwd);
+        return encrypted;
+    }
+</script>
+</html>

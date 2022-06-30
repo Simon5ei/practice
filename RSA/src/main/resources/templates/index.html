@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="doLogin">
+    <!--页面放置一个隐藏的input标签，用于存放公钥-->
+    <input type="hidden" th:value="${session.publicKey}" name="publicKey" id="publicKey">
+
+    <!--用户名;autofocus=""--页面加载时有光标-->
+    <input type="text"  name="username" required="" autofocus="">
+    <!--密码-->
+    <input type="password" name="password" required="">
+    <button type="button" id="bt">登录</button>
+    <a th:href="@{/AddPage}">注册</a>
+</form>
+</body>
+<!--jquery cdn-->
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<!--引入jsencrypt.js  cdn-->
+<script src="https://cdn.bootcss.com/jsencrypt/3.0.0-beta.1/jsencrypt.js"></script>
+<!--SweetAlert-->
+<link href="https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/0.0.1/sweetalert2.css" rel="stylesheet">
+<script src="https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/0.0.1/sweetalert2.min.js"></script>
+<script type="text/javascript">
+    $("#bt").click(function () {
+        let data = $("#doLogin").serializeArray();
+        let publicKey = data[0].value;
+        let username = data[1].value;
+        let oldPwd = data[2].value;
+        let encrypt_Pwd = encrypt(publicKey, oldPwd);
+        let data1 = {"username": username, "encrypt_Pwd": encrypt_Pwd,"oldPwd": oldPwd};
+        $.ajax({
+            url: '/user/login',
+            type: 'POST',
+            data: data1,
+            dataType: 'json',
+            success: function (res) {
+                // 一旦设置的 dataType 选项，就不再关心 服务端 响应的 Content-Type 了
+                // 客户端会主观认为服务端返回的就是 JSON 格式的字符串
+                if (res.code == 200) {
+                    swal({
+                        title: "登录成功！",
+                        type: "success",
+                        closeOnConfirm: false,
+                    }, function () {
+                        window.location = "/go?username="+username;
+                    });
+                }
+                if (res.code == 101) {
+                    swal({
+                        title: "登录失败。",
+                        text: "输入信息有误。",
+                        type: "error",
+                        confirmButtonText: "重新登录",
+                    });
+                }
+            },
+            error: function () {
+                swal({
+                    title: "登录失败",
+                    text: "网络异常",
+                    type: "error",
+                    confirmButtonText: "重新登录",
+                });
+            }
+        });
+    });
+    // RSA前端加密
+    function encrypt(key, oldPwd) {
+        let encrypt = new JSEncrypt();
+        encrypt.setPublicKey(key);
+        let encrypted = encrypt.encrypt(oldPwd);
+        return encrypted;
+    }
+</script>
+</html>

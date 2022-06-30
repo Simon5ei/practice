@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="RSA" />
         <module name="testmybatis" />
         <module name="testHTTPClient" />
         <module name="testServer" />
@@ -15,6 +16,7 @@
     <bytecodeTargetLevel>
       <module name="autoGenerate" target="1.8" />
       <module name="easy-generator" target="1.8" />
+      <module name="RSA" target="1.8" />
       <module name="testHTTPClient" target="1.8" />
       <module name="testmybatis" target="1.8" />
       <module name="testRedis" target="1.8" />
