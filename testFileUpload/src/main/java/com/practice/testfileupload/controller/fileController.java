@@ -1,6 +1,7 @@
 package com.practice.testfileupload.controller;
 
 import com.practice.testfileupload.annotations.FileCheck;
+import com.practice.testfileupload.enmus.FileType;
 import com.practice.testfileupload.service.ExcelService;
 import com.practice.testfileupload.service.fileServiceImpl;
 import com.practice.testfileupload.utils.DESUtils;
@@ -40,7 +41,7 @@ public class fileController {
     //upload
     @PostMapping("/upload")
     @ResponseBody
-    @FileCheck(message = "不支持的文件格式", supportedSuffixes = {"png"}, type = FileCheck.CheckType.MAGIC_NUMBER)
+    @FileCheck(supportedFileTypes = {FileType.PNG}, type = FileCheck.CheckType.MAGIC_NUMBER)
     public Object upload(String name,String school,String telephone, MultipartFile resume) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (resume != null) {    // 现在有文件上传

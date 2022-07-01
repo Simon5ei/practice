@@ -3,13 +3,12 @@ package com.practice.testfileupload.aspects;
 import cn.hutool.core.io.FileUtil;
 import com.practice.testfileupload.annotations.FileCheck;
 import com.practice.testfileupload.enmus.FileType;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,11 +24,11 @@ import java.util.Set;
  * @description 文件校验切面
  */
 @Component
-@Slf4j
+//@Slf4j
 @Aspect
-@ConditionalOnProperty(prefix = "file-check", name = "enabled", havingValue = "true")
+//@ConditionalOnProperty(prefix = "file-check", name = "enabled", havingValue = "true")
 public class FileCheckAspect {
-
+    private static final Logger logger = LoggerFactory.getLogger(FileCheckAspect.class);
     @Before("@annotation(annotation)")
     public void before(JoinPoint joinPoint, FileCheck annotation) throws Exception {
 
@@ -120,7 +119,7 @@ public class FileCheckAspect {
             stringBuilder.append(hv);
         }
         String result = stringBuilder.toString();
-        log.debug("文件头: {}", result);
+        logger.debug("文件头: {}", result);
         return result;
     }
 }
