@@ -1,17 +1,16 @@
-package com.practice.testfileupload.enumeration;
+package com.practice.testfileupload.enmus;
 
 import lombok.Getter;
-import lombok.NonNull;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.lang.NonNull;
 
 /**
- * 文件类型
- * 文件魔数
- * @author Shawn
- * @date 2021/11/23
+ * @author cube.li
+ * @date 2021/6/25 20:29
+ * @description 文件类型
  */
 @Getter
 public enum FileType {
+
     /**
      * JPEG  (jpg)
      */
@@ -254,6 +253,7 @@ public enum FileType {
      */
     SLY("SLY", "53520100");
 
+
     /**
      * 后缀 大写字母
      */
@@ -270,12 +270,12 @@ public enum FileType {
     }
 
     @NonNull
-    public static FileType getBySuffix(String suffix) throws FileUploadException {
-        for (FileType fileType : FileType.values()) {
+    public static FileType getBySuffix(String suffix) {
+        for (FileType fileType : values()) {
             if (fileType.getSuffix().equals(suffix.toUpperCase())) {
                 return fileType;
             }
         }
-        throw new FileUploadException("不支持的文件后缀 : " + suffix);
+        throw new IllegalArgumentException("unsupported file suffix : " + suffix);
     }
 }

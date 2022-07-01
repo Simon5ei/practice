@@ -1,5 +1,6 @@
 package com.practice.testfileupload.controller;
 
+import com.practice.testfileupload.annotations.FileCheck;
 import com.practice.testfileupload.service.ExcelService;
 import com.practice.testfileupload.service.fileServiceImpl;
 import com.practice.testfileupload.utils.DESUtils;
@@ -8,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,12 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class fileController {
+    List<String> supportFileFormats =new ArrayList<>(Arrays.asList("png".split(",")));
+    private boolean checkFormats(String fileFullName){
+        String suffix = fileFullName.substring(fileFullName.lastIndexOf(".") + 1).toLowerCase();
+        return supportFileFormats.stream().anyMatch(suffix::contains);
+    }
     private static final Logger log = LoggerFactory.getLogger(fileController.class);
     @Autowired
     private fileServiceImpl fileService;
@@ -39,9 +40,17 @@ public class fileController {
     //upload
     @PostMapping("/upload")
     @ResponseBody
+    @FileCheck(message = "不支持的文件格式", supportedSuffixes = {"png"}, type = FileCheck.CheckType.MAGIC_NUMBER)
     public Object upload(String name,String school,String telephone, MultipartFile resume) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (resume != null) {    // 现在有文件上传
+            String originalFilename = resume.getOriginalFilename();
+            log.info(originalFilename);
+            assert originalFilename != null;
+            boolean checkFormats = checkFormats(originalFilename);
+//            if (!checkFormats){
+//                return "wrong file_type";
+//            }
             //姓名
             map.put("name-param", name);
             map.put("school-param", school);
