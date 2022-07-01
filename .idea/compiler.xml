@@ -11,12 +11,14 @@
         <module name="testmybatis" />
         <module name="testHTTPClient" />
         <module name="testServer" />
+        <module name="testFileUpload" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="autoGenerate" target="1.8" />
       <module name="easy-generator" target="1.8" />
       <module name="RSA" target="1.8" />
+      <module name="testFileUpload" target="1.8" />
       <module name="testHTTPClient" target="1.8" />
       <module name="testmybatis" target="1.8" />
       <module name="testRedis" target="1.8" />
