@@ -1,5 +1,6 @@
 package com.practice.testmybatis.controller;
 
+import com.practice.testmybatis.auth.PassToken;
 import com.practice.testmybatis.domain.User;
 import com.practice.testmybatis.mapper.UserAddMapper;
 import com.practice.testmybatis.mapper.UserDelMapper;
@@ -71,6 +72,7 @@ public class UserController {
         }
         return res.toString();
     }
+    @PassToken
     @RequestMapping("/addp")
     @ResponseBody
     public String ShowAddResPF(@RequestParam("name") String name, @RequestParam("pswd") String pswd) {

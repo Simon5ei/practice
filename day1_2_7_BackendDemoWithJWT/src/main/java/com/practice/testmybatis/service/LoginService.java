@@ -12,7 +12,7 @@ public class LoginService {
     private redis Redis;
     @Autowired
     private UserNameMapper QueryNameMapper;
-    public Boolean login(String name,String pwsd){
+    public Boolean login(String name, String pwsd){
         User u=QueryNameMapper.queryNameMapper(name);
         if(u.getPswd().equals(pwsd)){
             Redis.set(u.getIduser().toString(),"1",30);
