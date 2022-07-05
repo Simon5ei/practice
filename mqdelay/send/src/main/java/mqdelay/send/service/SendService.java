@@ -4,9 +4,6 @@ import com.alibaba.fastjson.JSON;
 import mqdelay.send.model.OrderMsg;
 import mqdelay.send.rocket.Producer;
 import mqdelay.send.rocket.RocketConstants;
-import mqdelay.send.strategy.PriorityStrategy;
-import mqdelay.send.strategy.normalStrategy;
-import mqdelay.send.strategy.vipStrategy;
 import mqdelay.send.util.TimeUtil;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -29,14 +26,6 @@ public class SendService{
 
     @Async
     public void SendMs(int userId) throws RemotingException, InterruptedException, MQClientException, MQBrokerException {
-
-        PriorityStrategy priorityStrategy;
-        //策略模式生产方法
-        if(userId>10) priorityStrategy =new vipStrategy();
-        else priorityStrategy =new normalStrategy();
-        //策略模式使用方法
-        priorityStrategy.MySetPriority();
-
 
         logger.info(Thread.currentThread().getName());
         DateTimeFormatter df_year = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
