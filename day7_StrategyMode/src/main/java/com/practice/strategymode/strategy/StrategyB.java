@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StrategyB implements ApiStrategy{
+    @Override
     public String Out(JSONObject data){
         System.out.println("Using Strategy B");
         try {

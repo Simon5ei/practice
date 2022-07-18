@@ -8,9 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -18,14 +16,6 @@ public class User {
     private String name;
     private String pswd;
     private Boolean isdel;
-    private Date createtime;
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
 
     public Boolean getIsdel() {
         return isdel;
@@ -39,6 +29,15 @@ public class User {
                 ", isdel=" + isdel +
                 ", pswd='" + pswd + '\'' +
                 '}';
+    }
+
+    public User() {
+
+    }
+
+    public User(String name, String pswd) {
+        this.name = name;
+        this.pswd = pswd;
     }
 
     public void setIsdel(Boolean isdel) {

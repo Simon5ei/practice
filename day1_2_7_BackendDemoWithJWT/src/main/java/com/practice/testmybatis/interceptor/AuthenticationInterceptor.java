@@ -1,5 +1,6 @@
 package com.practice.testmybatis.interceptor;
 
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -8,7 +9,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.practice.testmybatis.auth.PassToken;
 import com.practice.testmybatis.auth.UserLoginToken;
 import com.practice.testmybatis.domain.User;
-import com.practice.testmybatis.mapper.UserIDMapper;
 import com.practice.testmybatis.mapper.UserNameMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
@@ -49,18 +51,20 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             if (userLoginToken.required()) {
                 // 执行认证
                 if (token == null) {
-                    throw new RuntimeException("无token，请重新登录");
+                    getError(httpServletResponse,"No token Plz ReLogin");
+                    return false;
                 }
                 String username = null;
                 try {
-
                     username = JWT.decode(token).getClaims().get("name").asString();
                 } catch (JWTDecodeException j) {
-                    throw new RuntimeException("Json格式出错");
+                    getError(httpServletResponse,"Wrong Json");
+                    return false;
                 }
                 User user = userNameMapper.queryNameMapper(username);
                 if (user == null) {
-                    throw new RuntimeException("用户不存在，请重新登录");
+                    getError(httpServletResponse,"No user");
+                    return false;
                 }
                 // 验证 token
                 JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256("1234")).build();
@@ -69,14 +73,27 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     System.out.println(jwtVerifier.verify(token));
                     System.out.println("name:"+JWT.decode(token).getClaim("name").asString());
                 } catch (JWTVerificationException e) {
-                    throw new RuntimeException("Json验证出错");
+                    getError(httpServletResponse,"Wrong Json");
+                    return false;
                 }
                 return true;
             }
         }
         return true;
     }
-
+    private void getError(HttpServletResponse httpServletResponse,String msg) throws IOException {
+        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setContentType("application/json; charset=utf-8");
+        JSONObject res = new JSONObject();
+        res.put("status","-1");
+        res.put("msg",msg);
+        PrintWriter out = null ;
+        out = httpServletResponse.getWriter();
+        out.write(res.toString());
+        out.flush();
+        out.close();
+    }
     @Override
     public void postHandle(HttpServletRequest httpServletRequest,
                            HttpServletResponse httpServletResponse,

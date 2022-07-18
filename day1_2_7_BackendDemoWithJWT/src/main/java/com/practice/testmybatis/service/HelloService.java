@@ -14,10 +14,12 @@ public class HelloService {
     private redis Redis;
     public String showInfo(Integer userID) {
         User u=userIDMapper.queryUserIDMapper(userID);
-        if(Redis.get(u.getIduser().toString())==null) return "Plz Login!";
+        if(Redis.get(u.getIduser().toString())==null) {
+            return "Plz Login!";
+        }
         if(Redis.get(u.getIduser().toString()).equals("1")){
             return "Hello!";
         }
-        else return "???";
+        else{ return "???";}
     }
 }

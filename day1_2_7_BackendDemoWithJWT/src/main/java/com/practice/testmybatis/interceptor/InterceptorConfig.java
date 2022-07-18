@@ -16,4 +16,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public AuthenticationInterceptor authenticationInterceptor() {
         return new AuthenticationInterceptor();
     }
+
+
 }

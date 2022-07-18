@@ -2,53 +2,56 @@ package com.practice.testmybatis.controller;
 
 import com.practice.testmybatis.auth.PassToken;
 import com.practice.testmybatis.auth.UserLoginToken;
+import com.practice.testmybatis.component.redis;
 import com.practice.testmybatis.domain.User;
 import com.practice.testmybatis.mapper.UserNameMapper;
-import com.practice.testmybatis.service.LoginService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.stereotype.Controller;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 public class LoginController {
     @Autowired
-    private LoginService Login;
+    private redis Redis;
     @Autowired
-    private UserNameMapper QueryNameMapper;
+    private UserNameMapper queryNameMapper;
     @PassToken
     @RequestMapping("/user/login")
     public String login(@RequestBody User user) throws JSONException {
         JSONObject jsonObject=new JSONObject();
-        User userForBase=QueryNameMapper.queryNameMapper(user.getName());
+        User userForBase=queryNameMapper.queryNameMapper(user.getName());
         if(userForBase==null){
-            //System.out.println("1");
             jsonObject.put("message","登录失败,用户不存在");
-            return jsonObject.toString();
         }else {
             if (!userForBase.getPswd().equals(user.getPswd())){
-                //System.out.println("2");
                 jsonObject.put("message","登录失败,密码错误");
-                return jsonObject.toString();
             }else {
-                //System.out.println("3");
                 String token = User.getToken(user);
                 System.out.println(token);
                 jsonObject.put("token", token);
                 jsonObject.put("user", userForBase);
-                return jsonObject.toString();
             }
         }
+        return jsonObject.toString();
     }
+    private final ReentrantLock lock = new ReentrantLock();
+    private String token;
     @UserLoginToken
     @GetMapping("/getmessage")
-    public String getMessage(HttpServletRequest httpServletRequest){
-        String token = httpServletRequest.getHeader("token");
+    public String getMessage(HttpServletRequest httpServletRequest) throws InterruptedException {
+        token = httpServletRequest.getHeader("token");
+        if (Redis.get(User.getIduserToken(token))!=null){
+            return "慢点";
+        }
+        //dfhlksdfal;df
+        Redis.set(User.getIduserToken(token),"1",30);
         return User.getIduserToken(token);
     }
+
 }
